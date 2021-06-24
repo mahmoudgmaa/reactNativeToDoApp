@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,26 +8,63 @@ import {
   TextInput,
   Platform,
   TouchableOpacity,
+  Keyboard,
+  ScrollView,
 } from "react-native";
 import Task from "./components/task";
 export default function App() {
+  const [task, setTask] = useState();
+  const [taskItems, setTaskItems] = useState([]);
+
+  const handleAddTask = () => {
+    Keyboard.dismiss();
+    setTaskItems([...taskItems, task]);
+    setTask("");
+  };
+
+  const completeTask = (index) => {
+    let itemsCopy = [...taskItems];
+    itemsCopy.splice(index, 1);
+    setTaskItems(itemsCopy);
+  };
+
   return (
     <View style={styles.container}>
-      {/* todays' tasks */}
-      <View style={styles.tasksWrapper}>
-        <Text style={styles.sectionTitle}>Today's Tasks</Text>
-        <View style={styles.items}>
-          <Task text="task" />
-          <Task text="task" />
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.tasksWrapper}>
+          <Text style={styles.sectionTitle}>Today's Tasks</Text>
+          <View style={styles.items}>
+            {taskItems.map((item, index) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => completeTask(index)}
+                  key={index}
+                >
+                  <Task text={item} />
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
-      </View>
-
+      </ScrollView>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.writeTaskWrapper}
       >
-        <TextInput style={styles.input} placeholder="write a task" />
-        <TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder="write a task"
+          onChangeText={(text) => {
+            setTask(text);
+          }}
+          value={task}
+        />
+        <TouchableOpacity onPress={() => handleAddTask()}>
           <View style={styles.addWrapper}>
             <Text style={styles.addText}>+</Text>
           </View>
@@ -52,5 +89,36 @@ const styles = StyleSheet.create({
   },
   items: {
     marginTop: 20,
+  },
+  writeTaskWrapper: {
+    position: "absolute",
+    bottom: 60,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  input: {
+    paddingVertical: 15,
+    width: 250,
+    paddingHorizontal: 15,
+    backgroundColor: "#fff",
+    borderRadius: 60,
+    borderColor: "#c0c0c0",
+    borderWidth: 1,
+  },
+  addWrapper: {
+    width: 60,
+    height: 60,
+    backgroundColor: "#fff",
+    borderRadius: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: "#c0c0c0",
+    borderWidth: 1,
+  },
+  addText: {
+    fontSize: 35,
+    color: "#55BCF6",
   },
 });
