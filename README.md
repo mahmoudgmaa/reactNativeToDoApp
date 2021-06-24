@@ -1,5 +1,5 @@
 # Todo App
 
-## my first Mobile App wit react native
+## my first Mobile App withs react native
 
 [Demo](https://expo.io/@mahmoudgomaa/todo-app)
